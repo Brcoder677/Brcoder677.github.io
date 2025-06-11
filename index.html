@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Matrix Love</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: black;
+      font-family: Arial, sans-serif;
+    }
+
+    canvas {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #controlPanel {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+      background: rgba(255, 105, 180, 0.85);
+      color: white;
+      padding: 15px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(255, 105, 180, 0.8);
+      width: 200px;
+      font-size: 14px;
+      backdrop-filter: blur(5px);
+    }
+
+    #controlPanel label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    #controlPanel select,
+    #controlPanel input[type="color"],
+    #controlPanel input[type="range"],
+    #controlPanel button {
+      width: 100%;
+      margin-bottom: 12px;
+      border: none;
+      border-radius: 5px;
+      padding: 6px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    #controlPanel button {
+      background-color: white;
+      color: #ff69b4;
+      font-weight: bold;
+    }
+
+    #controlPanel button:hover {
+      background-color: #ffe0ef;
+    }
+  </style>
+</head>
+<body>
+  <!-- Panel de opciones -->
+  <div id="controlPanel">
+    <label for="colorPicker">🎨 Color:</label>
+    <input type="color" id="colorPicker" value="#ff69b4">
+
+    <label for="textSelect">💌 Mensaje:</label>
+    <select id="textSelect">
+      <option>Te amo</option>
+      <option>Te extraño</option>
+      <option>Eres mi todo</option>
+      <option>Te pienso</option>
+      <option>Mi vida eres tú</option>
+      <option>Contigo siempre</option>
+      <option>Mi corazón es tuyo</option>
+      <option>Amor eterno</option>
+      <option>Te necesito</option>
+      <option>Tú y yo por siempre</option>
+    </select>
+
+    <label for="fontSizeSlider">🔠 Tamaño:</label>
+    <input type="range" id="fontSizeSlider" min="12" max="36" value="18">
+
+    <button onclick="playMusic()">▶ Reproducir música</button>
+    <button onclick="pauseMusic()">⏸ Pausar música</button>
+  </div>
+
+  <!-- Música -->
+<audio id="bgMusic" loop>
+  <source src="audio/reik.mp3" type="audio/mpeg">
+</audio>
+
+
+  <!-- Lienzo -->
+  <canvas id="matrixCanvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById("matrixCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const colorPicker = document.getElementById("colorPicker");
+    const textSelect = document.getElementById("textSelect");
+    const fontSizeSlider = document.getElementById("fontSizeSlider");
+    const music = document.getElementById("bgMusic");
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let text = textSelect.value;
+    let fontSize = parseInt(fontSizeSlider.value);
+    let columns = canvas.width / fontSize;
+    let drops = new Array(Math.floor(columns)).fill(1);
+    let currentColor = colorPicker.value;
+
+    function drawMatrix() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = currentColor;
+      ctx.font = fontSize + "px 'Courier New'";
+
+      for (let i = 0; i < drops.length; i++) {
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+
+    setInterval(drawMatrix, 55); // velocidad moderada
+
+    function restartMatrix() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      columns = canvas.width / fontSize;
+      drops = new Array(Math.floor(columns)).fill(1);
+    }
+
+    colorPicker.addEventListener("input", () => {
+      currentColor = colorPicker.value;
+    });
+
+    textSelect.addEventListener("change", () => {
+      text = textSelect.value;
+    });
+
+    fontSizeSlider.addEventListener("input", () => {
+      fontSize = parseInt(fontSizeSlider.value);
+      restartMatrix();
+    });
+
+    window.addEventListener("resize", restartMatrix);
+
+    // Funciones para controlar la música
+    function playMusic() {
+      music.play();
+    }
+
+    function pauseMusic() {
+      music.pause();
+    }
+  </script>
+</body>
+</html>
+
